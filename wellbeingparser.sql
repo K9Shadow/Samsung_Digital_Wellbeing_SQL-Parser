@@ -1,0 +1,58 @@
+SELECT usageEvents.eventId,
+datetime(usageEvents.timeStamp/1000, 'UNIXEPOCH', 'localtime') as 'Zeitstempel in lokaler Zeit',
+usageEvents.eventType as EventTyp, 
+CASE
+when usageEvents.eventType=0 THEN 'NONE'
+when usageEvents.eventType=1 THEN 'ACTIVITY_RESUMED'
+when usageEvents.eventType=2 THEN 'ACTIVITY_PAUSED'
+when usageEvents.eventType=5 THEN 'CONFIGURATION_CHANGE'
+when usageEvents.eventType=7 THEN 'USER_INTERACTION'
+when usageEvents.eventType=8 THEN 'SHORTCUT_INVOCATION'
+when usageEvents.eventType=10 THEN 'NOTIFICATION PANEL'
+when usageEvents.eventType=11 THEN 'STANDBY_BUCKET_CHANGED'
+when usageEvents.eventType=12 THEN 'NOTIFICATION'
+when usageEvents.eventType=15 THEN 'SCREEN_INTERACTIVE -> "Screen turned on for full user interaction, not ambient display or other non-interactive state")'
+when usageEvents.eventType=16 THEN 'SCREEN_NON_INTERACTIVE -> "Screen completely turned off or turned on only in a non-interactive state like ambient display")'
+when usageEvents.eventType=17 THEN 'KEYGUARD_SHOWN -> "Lockscreen" wird gezeigt, egal, ob der Bildschirm ein- oder ausgeschaltet ist'
+when usageEvents.eventType=18 THEN 'KEYGUARD_HIDDEN -> "Lockscreen wird ausgeblendet" - passiert typischerweise, wenn das Gerät entsperrt wird'
+when usageEvents.eventType=19 THEN 'FOREGROUND_SERVICE START'
+when usageEvents.eventType=20 THEN 'FOREGROUND_SERVICE_STOP'
+when usageEvents.eventType=23 THEN 'ACTIVITY_STOPPED'
+when usageEvents.eventType=26 THEN 'DEVICE_SHUTDOWN'
+when usageEvents.eventType=27 THEN 'DEVICE_STARTUP'
+else 'UNBEKANNTER EVENTTYP'
+END as 'EventTyp-Beschreibung',
+foundPackages.name as 'gestartete App (Paketname)',
+CASE
+WHEN foundPackages.name='com.google.android.projection.gearhead' then 'Android Auto'
+WHEN foundPackages.name='com.google.android.gm' then 'Gmail (Google Mail)'
+WHEN foundPackages.name='com.google.android.googlequicksearchbox' then 'Google App'
+WHEN foundPackages.name='com.sec.android.app.sbrowser' then 'Samsung Internet Browser'
+WHEN foundPackages.name='com.facebook.katana' then 'Facebook'
+WHEN foundPackages.name='com.google.android.apps.tachyon' then 'Google Meet'
+WHEN foundPackages.name='com.sec.android.daemonapp' then 'Google App'
+WHEN foundPackages.name='android' then 'Android Betriebssystem'
+WHEN foundPackages.name='com.tripledot.solitaire' then 'Solitaire von Tripledot Studios'
+WHEN foundPackages.name='com.sec.android.app.launcher' then 'Samsung One UI-Startbildschirm'
+WHEN foundPackages.name='com.zhiliaoapp.musically' then 'TikTok: Videos, Lives & Musik'
+WHEN foundPackages.name='com.microsoft.skydrive' then 'Microsoft OneDrive'
+WHEN foundPackages.name='com.crazylabs.diy.make.up' then 'Dein Make-up-Studio von CrazyLabs LTD'
+WHEN foundPackages.name='com.android.vending' then 'Google Play Store'
+WHEN foundPackages.name='com.google.android.permissioncontroller' then 'PermissionController Mainline-Modul enthält Datenschutzrichtlinien und die Benutzeroberfläche für das Gewähren und Verwalten von Berechtigungen'
+WHEN foundPackages.name='com.fidgettrading.game' then 'Fidget Toys Trading: Pop It 3D'
+WHEN foundPackages.name='com.facebook.orca' then 'Facebook Messenger'
+WHEN foundPackages.name='com.samsung.android.game.gamehome' then 'Samsung Game Launcher'
+WHEN foundPackages.name='com.psv.lol.surprise.beauty_salon' then 'LOL Surprise! Schönheitssalon'
+WHEN foundPackages.name='com.whatsapp' then 'WhatsApp Messenger'
+WHEN foundPackages.name='com.samsung.android.dialer' then 'Samsung-Standard-Dialer, der die Telefonanrufe auf dem Gerät verarbeitet'
+WHEN foundPackages.name='com.samsung.android.incallui' then 'Benutzeroberfläche (UI), die man sieht, wenn man auf einem Samsung-Telefon telefoniert'
+WHEN foundPackages.name='com.google.android.apps.messaging' then 'Messages von Google'
+WHEN foundPackages.name='com.google.android.gms' then 'Google Play-Dienste zur Aktualisierung von Google- und Google Play-Apps'
+WHEN foundPackages.name='com.google.android.apps.messaging' then 'Messages von Google ist die offizielle Google App für Messaging über Rich Communication Services (RCS) mit SMS/MMS als Alternative'
+WHEN foundPackages.name='com.samsung.android.mcfserver' then 'Samsung Multi Connectivity App'
+WHEN foundPackages.name='pl.smartlockers' then 'Q2 Pranie - umfassender Wäscheservices'
+END as 'Appname im Klartext'
+FROM usageEvents
+INNER JOIN foundPackages ON usageEvents.pkgId=foundPackages.pkgId
+
+ORDER BY 'Zeitstempel in lokaler Zeit'
